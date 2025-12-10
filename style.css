@@ -128,6 +128,7 @@ footer {
 
 .card {
   background: linear-gradient(180deg, #1a1a1f, #121217);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
   border-radius: 18px;
   padding: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,.35);
