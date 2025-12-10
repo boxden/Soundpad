@@ -7,7 +7,6 @@
   --border: #262630;
 }
 
-/* ☀ Светлая тема */
 [data-theme="light"] {
   --bg: #f4f4f5;
   --card: #ffffff;
@@ -29,7 +28,6 @@ html, body {
   margin: 6px 0;
 }
 
-/* Плавный переход для всех элементов */
 * {
   transition:
     background-color 0.35s ease,
@@ -41,6 +39,12 @@ html, body {
 * {
   box-sizing: border-box;
   font-family: Inter, system-ui, sans-serif;
+}
+
+main {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
 }
 
 body {
@@ -78,12 +82,6 @@ header h1 {
 .btn.primary {
   background: var(--accent);
   border-color: var(--accent);
-}
-
-main {
-  max-width: 700px;
-  margin: auto;
-  padding: 20px;
 }
 
 .sound {
