@@ -16,20 +16,28 @@ toggle.addEventListener("click", () => {
   root.setAttribute("data-theme", newTheme);
   localStorage.setItem("theme", newTheme);
   updateIcon();
-  updateWaveColors(); // ✅ чтобы waveform менял цвет
+  updateWaveColors();
 });
 
 /* 🎵 WaveSurfer */
 let players = [];
 let current = null;
 
-document.addEventListener("DOMContentLoaded", () => {
+function canPlayAudio(type) {
+  const audio = document.createElement("audio");
+  return !!audio.canPlayType && audio.canPlayType(type) !== "";
+}
 
+document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".sound").forEach((el) => {
     const container = el.querySelector(".waveform");
-    const url = el.dataset.audio;
+    let url = el.dataset.audio;
 
     if (!container || !url) return;
+
+    if (url.endsWith(".ogg") && !canPlayAudio("audio/ogg")) {
+      url = url.replace(".ogg", ".mp3");
+    }
 
     const ws = WaveSurfer.create({
       container,
@@ -41,13 +49,20 @@ document.addEventListener("DOMContentLoaded", () => {
       waveColor: getWaveColor(),
       progressColor: getProgressColor(),
       cursorWidth: 0,
-      normalize: true
+      normalize: true,
+      backend: "WebAudio"
     });
+
     ws.on("ready", () => {
       const d = ws.getDuration();
       const min = Math.floor(d / 60);
       const sec = Math.floor(d % 60).toString().padStart(2, "0");
       el.querySelector(".duration").textContent = `${min}:${sec}`;
+    });
+
+    ws.on("error", (e) => {
+      console.warn("WaveSurfer error:", e);
+      el.querySelector(".duration").textContent = "Ошибка аудио";
     });
 
     el.querySelector(".play").addEventListener("click", () => {
