@@ -133,9 +133,14 @@ footer {
   box-shadow: 0 10px 30px rgba(0,0,0,.35);
 }
 
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(0,0,0,.45);
+}
+
 .top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
 }
 
@@ -160,7 +165,8 @@ footer {
 }
 
 .waveform {
-  height: 36px;
+  height: 44px;
+  margin-top: 6px;
 }
 
 .duration {
@@ -170,7 +176,7 @@ footer {
 
 .add {
   width: 100%;
-  margin-top: 14px;
+  margin-top: 18px;
   padding: 10px;
   border-radius: 10px;
   border: none;
