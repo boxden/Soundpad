@@ -2,41 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
   <title>Soundpad Black Pack</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
+
+  <button id="themeToggle" class="btn theme-btn">
+  🌙
+  </button>
+
   <h1>Soundpad Black Pack</h1>
   <p>Handpicked soundboard pack for Soundpad</p>
 
   <div class="actions">
-    <a href="pack.zip" class="btn primary">⬇ Download Pack (ZIP)</a>
-    <a href="playlist/Soundpad_Black_Pack.spp" class="btn">⬇ Soundpad Playlist</a>
+    <a href="pack.zip" class="btn primary">Download Pack (ZIP)</a>
+    <a href="playlist/Soundpad_Black_Pack.spp" class="btn">Soundpad Playlist</a>
   </div>
 </header>
 
-<main>
-  <div class="sound">
-    <span>Vine Boom</span>
-    <audio src="sounds/meme/vine_boom.mp3"></audio>
-    <button onclick="play(this)">▶</button>
-    <a href="sounds/meme/vine_boom.mp3" download>⬇</a>
+<main class="grid">
+  <div class="sound card" data-audio="sounds/meme/vine_boom.mp3">
+    <div class="top">
+      <button class="play">▶</button>
+
+      <div class="info">
+        <div class="title">Vine Boom</div>
+        <div class="waveform"></div>
+      </div>
+
+      <span class="duration">0:02</span>
+    </div>
+
+    <button class="add">
+      🎵 Добавить в Soundpad
+    </button>
   </div>
 
-  <div class="sound">
-    <span>Bruh</span>
-    <audio src="sounds/reactions/bruh.wav"></audio>
-    <button onclick="play(this)">▶</button>
-    <a href="sounds/reactions/bruh.wav" download>⬇</a>
+  <div class="sound card" data-audio="sounds/meme/boom.ogg">
+    <div class="top">
+      <button class="play">▶</button>
+
+      <div class="info">
+        <div class="title">Bruh</div>
+        <div class="waveform"></div>
+      </div>
+
+      <span class="duration">0:02</span>
+    </div>
+
+    <button class="add">
+      🎵 Добавить в Soundpad
+    </button>
   </div>
 </main>
+
 
 <footer>
   <p>Made for Soundpad • GitHub Pages</p>
 </footer>
 
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script src="script.js"></script>
 </body>
 </html>
