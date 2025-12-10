@@ -19,29 +19,30 @@ toggle.addEventListener("click", () => {
   updateWaveColors();
 });
 
-/* 🎵 WaveSurfer */
 let players = [];
 let current = null;
 
-function canPlayAudio(type) {
-  const audio = document.createElement("audio");
-  return !!audio.canPlayType && audio.canPlayType(type) !== "";
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".sound").forEach((el) => {
-    const container = el.querySelector(".waveform");
-    let url = el.dataset.audio;
+  const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+  document.querySelectorAll(".sound").forEach(async (el) => {
+    const container = el.querySelector(".waveform");
+    const url = el.dataset.audio;
     if (!container || !url) return;
 
-    if (url.endsWith(".ogg") && !canPlayAudio("audio/ogg")) {
-      url = url.replace(".ogg", ".mp3");
+    let audioBuffer;
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      audioBuffer = await AudioCtx.decodeAudioData(arrayBuffer);
+    } catch (e) {
+      console.warn("Ошибка декодирования аудио:", e);
+      el.querySelector(".duration").textContent = "Ошибка аудио";
+      return;
     }
 
     const ws = WaveSurfer.create({
       container,
-      url,
       height: 36,
       barWidth: 2,
       barGap: 1,
@@ -53,16 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
       backend: "WebAudio"
     });
 
+    ws.loadDecodedBuffer(audioBuffer);
+
     ws.on("ready", () => {
       const d = ws.getDuration();
       const min = Math.floor(d / 60);
       const sec = Math.floor(d % 60).toString().padStart(2, "0");
       el.querySelector(".duration").textContent = `${min}:${sec}`;
-    });
-
-    ws.on("error", (e) => {
-      console.warn("WaveSurfer error:", e);
-      el.querySelector(".duration").textContent = "Ошибка аудио";
     });
 
     el.querySelector(".play").addEventListener("click", () => {
@@ -73,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     players.push(ws);
   });
-
 });
 
 /* 🎨 Цвета wave под тему */
