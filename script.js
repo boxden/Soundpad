@@ -1,4 +1,3 @@
-/* 🌓 Theme logic */
 const root = document.documentElement;
 const toggle = document.getElementById("themeToggle");
 
@@ -22,63 +21,57 @@ toggle.addEventListener("click", () => {
 let players = [];
 let current = null;
 
-const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-async function loadLocalFile(file, containerEl) {
-  const arrayBuffer = await file.arrayBuffer();
-  let audioBuffer;
-  try {
-    audioBuffer = await AudioCtx.decodeAudioData(arrayBuffer);
-  } catch (e) {
-    console.warn("Ошибка декодирования аудио:", e);
-    containerEl.querySelector(".duration").textContent = "Ошибка аудио";
-    return;
-  }
-
-  const ws = WaveSurfer.create({
-    container: containerEl.querySelector(".waveform"),
-    height: 36,
-    barWidth: 2,
-    barGap: 1,
-    barRadius: 2,
-    waveColor: getWaveColor(),
-    progressColor: getProgressColor(),
-    cursorWidth: 0,
-    normalize: true,
-    backend: "WebAudio"
-  });
-
-  ws.loadDecodedBuffer(audioBuffer);
-
-  ws.on("ready", () => {
-    const d = ws.getDuration();
-    const min = Math.floor(d / 60);
-    const sec = Math.floor(d % 60).toString().padStart(2, "0");
-    containerEl.querySelector(".duration").textContent = `${min}:${sec}`;
-  });
-
-  containerEl.querySelector(".play").addEventListener("click", () => {
-    if (current && current !== ws) current.stop();
-    ws.playPause();
-    current = ws;
-  });
-
-  players.push(ws);
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".sound").forEach((el) => {
-    const fileInput = el.querySelector("input[type=file]");
-    if (!fileInput) return;
+  const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      if (file) loadLocalFile(file, el);
+  document.querySelectorAll(".sound").forEach(async (el) => {
+    const container = el.querySelector(".waveform");
+    const url = el.dataset.audio;
+    if (!container || !url) return;
+
+    let audioBuffer;
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      audioBuffer = await AudioCtx.decodeAudioData(arrayBuffer);
+    } catch (e) {
+      console.warn("?????? ????????????? ?????:", e);
+      el.querySelector(".duration").textContent = "?????? ?????";
+      return;
+    }
+
+    const ws = WaveSurfer.create({
+      container,
+      height: 36,
+      barWidth: 2,
+      barGap: 1,
+      barRadius: 2,
+      waveColor: getWaveColor(),
+      progressColor: getProgressColor(),
+      cursorWidth: 0,
+      normalize: true,
+      backend: "WebAudio"
     });
+
+    ws.loadDecodedBuffer(audioBuffer);
+
+    ws.on("ready", () => {
+      const d = ws.getDuration();
+      const min = Math.floor(d / 60);
+      const sec = Math.floor(d % 60).toString().padStart(2, "0");
+      el.querySelector(".duration").textContent = `${min}:${sec}`;
+    });
+
+    el.querySelector(".play").addEventListener("click", () => {
+      if (current && current !== ws) current.stop();
+      ws.playPause();
+      current = ws;
+    });
+
+    players.push(ws);
   });
 });
 
-/* 🎨 Цвета wave под тему */
 function getWaveColor() {
   return getComputedStyle(document.documentElement)
     .getPropertyValue("--border")
